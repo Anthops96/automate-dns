@@ -25,9 +25,9 @@ spec:
               set -e
               declare -A fqdns   
               fqdns=(
-                  [1]='testdns'
-                  [2]='testdns1'
-                  [3]='testdns2')
+                  [1]='es-ingest'
+                  [2]='es-coordinator'
+                  [3]='fleet-server')
               rm -rf /certs/elastic-certificates.zip
               echo -e 'instances:' > /certs/instances.yml
               for fqdn in "${fqdns[@]}"; do rm -rf /certs/$fqdn/; done
@@ -67,7 +67,9 @@ spec:
               rm -rf /certs/step1_done
               declare -A fqdns
               fqdns=(
-                  [1]='testdns')
+                  [1]='es-ingest'
+                  [2]='es-coordinator'
+                  [3]='fleet-server')
               echo "Generating cert and key from .p12..."
               for fqdn in "${fqdns[@]}"; do openssl pkcs12 -in /certs/$fqdn/$fqdn.p12 -out /certs/$fqdn/$fqdn.key -nocerts -nodes -password pass:Password -passout pass:Password; done
               for fqdn in "${fqdns[@]}"; do openssl pkcs12 -in /certs/$fqdn/$fqdn.p12 -out /certs/$fqdn/$fqdn.crt -clcerts -nokeys -password pass:Password -passout pass:Password; done
