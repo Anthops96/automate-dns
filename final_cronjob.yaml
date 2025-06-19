@@ -7,24 +7,27 @@ spec:
   schedule: "0 0 31 2 *"  # Manual execution only
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: 30  # Automatic deletion of pod and job after completion
       template:
         spec:
           nodeSelector:
-            node-role.kubernetes.io/worker: "true"
+            node-role.kubernetes.io/worker: "true"  # Deploy only in worker nodes
           serviceAccountName: secret-writer
           containers:
-          - name: certificate-generator
+          - name: certificate-generator  # Initial container of the job
             image: elasticsearch/elasticsearch:8.17.0
             securityContext:
               runAsUser: 0
-            command:
+            command:      # Generate pk12 files from domain list
             - /bin/bash
             - -c
             - |
               set -e
-              declare -A fqdns
+              declare -A fqdns   
               fqdns=(
-                  [1]='testdns')
+                  [1]='testdns'
+                  [2]='testdns1'
+                  [3]='testdns2')
               rm -rf /certs/elastic-certificates.zip
               echo -e 'instances:' > /certs/instances.yml
               for fqdn in "${fqdns[@]}"; do rm -rf /certs/$fqdn/; done
@@ -37,11 +40,11 @@ spec:
             volumeMounts:
             - name: certs
               mountPath: /certs
-          - name: secret-creator
+          - name: secret-creator  # Containers that end the job
             image: ubuntu:noble
             securityContext:
               runAsUser: 0
-            command:
+            command:  # Generate certificates from pk12 and creation of secrets
             - /bin/bash
             - -c
             - |
@@ -110,5 +113,5 @@ spec:
           volumes:
           - name: certs
             persistentVolumeClaim:
-              claimName: elastic-certs-cephfs-pvc
+              claimName: elastic-certs-cephfs-pvc # Persistent volume that need the pods 
       backoffLimit: 1

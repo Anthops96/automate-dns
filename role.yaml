@@ -6,4 +6,4 @@ metadata:
 rules:
 - apiGroups: [""]
   resources: ["secrets"]
-  verbs: ["create", "get", "list", "watch"]
+  verbs: ["create", "get", "list", "watch"]  # Actions that the role allows and that resource into the namespace
