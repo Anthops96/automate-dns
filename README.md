@@ -27,4 +27,6 @@ This resource creates a job that we will execute manually, every time that we ad
 ```sh
 nano final_cronjob.yaml
 kubectl apply -f final_cronjob.yaml
+#Check status of the pod
+kubectl get pods --selector=job-name=elastic-certificates-secrets-generator
 ```
