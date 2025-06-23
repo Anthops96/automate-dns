@@ -23,11 +23,7 @@ nano rb.yaml
 kubectl apply -f rb.yaml
 ```
 ## Deploy Cronjob
-This resource creates a job that we will execute manually, every time that we add a new domain, because of this we will not schedule it. It is made up of two containers, which are executed in order, the first is generated with the ElasticSearch image, fulfilling the function of creating the pk12 files that contain the certificates and private keys, generated from the added domains. The second container generated from the Ubuntu Noble image creates the certificates and private keys through the pk12 files, which it uses to create the Secrets.
-```sh
-nano final_cronjob.yaml
-```
-
+This resource creates a job that we will execute manually, every time that we add a new domain, because of this we will not schedule it. It is made up of two containers, which are executed in order, the first is generated with the ElasticSearch image, fulfilling the function of creating the pk12 files that contain the certificates and private keys, generated from the added domains.
 ```yaml
           containers:
           - name: certificate-generator  # Initial container of the job
@@ -57,6 +53,9 @@ nano final_cronjob.yaml
             - name: certs
               mountPath: /certs
 ```
+
+ The second container generated from the Ubuntu Noble image creates the certificates and private keys through the pk12 files, which it uses to create the Secrets.
+
 
 ```yaml
           - name: secret-creator  # Containers that end the job
@@ -124,6 +123,7 @@ nano final_cronjob.yaml
 ```
 
 ```sh
+nano final_cronjob.yaml
 kubectl apply -f final_cronjob.yaml
 #Check status of the pod
 kubectl get pods --selector=job-name=elastic-certificates-secrets-generator
